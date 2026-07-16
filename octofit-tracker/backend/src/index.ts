@@ -12,7 +12,7 @@ dotenv.config();
 
 const app: Express = express();
 const PORT = 8000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/octofit';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/octofit_db';
 
 // Codespaces-aware API URL support
 const getApiUrl = (): string => {
