@@ -246,9 +246,9 @@ async function seedDatabase() {
         name: 'Beginner Running Plan',
         description: 'Start your running journey',
         exercises: [
-          { name: 'Warm-up jog', duration: 5 },
-          { name: 'Interval sprints', duration: 20 },
-          { name: 'Cool-down walk', duration: 5 }
+          { name: 'Warm-up jog', sets: 1, reps: 1, duration: 5 },
+          { name: 'Interval sprints', sets: 1, reps: 1, duration: 20 },
+          { name: 'Cool-down walk', sets: 1, reps: 1, duration: 5 }
         ],
         duration: 30,
         difficulty: 'beginner',
@@ -272,8 +272,8 @@ async function seedDatabase() {
         name: 'Cycling Endurance',
         description: 'Build long-distance stamina',
         exercises: [
-          { name: 'Steady-state cycling', duration: 120 },
-          { name: 'Hill repeats', duration: 15 }
+          { name: 'Steady-state cycling', sets: 1, reps: 1, duration: 120 },
+          { name: 'Hill repeats', sets: 1, reps: 1, duration: 15 }
         ],
         duration: 135,
         difficulty: 'intermediate',

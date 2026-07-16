@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import config from './config/api';
 import usersRouter from './routes/users';
 import teamsRouter from './routes/teams';
 import activitiesRouter from './routes/activities';
@@ -11,18 +12,6 @@ import workoutsRouter from './routes/workouts';
 dotenv.config();
 
 const app: Express = express();
-const PORT = 8000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/octofit_db';
-
-// Codespaces-aware API URL support
-const getApiUrl = (): string => {
-  if (process.env.CODESPACE_NAME) {
-    return `https://${process.env.CODESPACE_NAME}-${PORT}.app.github.dev`;
-  }
-  return `http://localhost:${PORT}`;
-};
-
-const API_URL = getApiUrl();
 
 // Middleware
 app.use(cors());
@@ -30,21 +19,22 @@ app.use(express.json());
 
 // MongoDB Connection
 mongoose
-  .connect(MONGODB_URI)
+  .connect(config.mongoDbUri)
   .then(() => {
-    console.log('Connected to MongoDB');
+    console.log('✅ Connected to MongoDB');
   })
   .catch((error) => {
-    console.error('MongoDB connection error:', error);
+    console.error('❌ MongoDB connection error:', error);
   });
 
-// Health check route
+// Health check route with API URL info
 app.get('/api/health', (req: Request, res: Response) => {
   res.json({
     status: 'OK',
     message: 'OctoFit Backend is running',
-    apiUrl: API_URL,
-    environment: process.env.NODE_ENV || 'development'
+    apiUrl: config.apiUrl,
+    environment: config.environment,
+    isCodespaces: config.isCodespaces
   });
 });
 
@@ -56,7 +46,30 @@ app.use('/api/leaderboard', leaderboardRouter);
 app.use('/api/workouts', workoutsRouter);
 
 // Start Server
-app.listen(PORT, () => {
-  console.log(`Server is running on ${API_URL}`);
-  console.log(`MongoDB connected to: ${MONGODB_URI}`);
+app.listen(config.port, () => {
+  console.log(`
+╔════════════════════════════════════════════════════════╗
+║        🏋️  OctoFit Tracker Backend Started             ║
+╚════════════════════════════════════════════════════════╝
+
+📍 API URL: ${config.apiUrl}
+🌍 Environment: ${config.environment}
+📊 MongoDB: ${config.mongoDbUri}
+${config.isCodespaces ? `🚀 Codespace: ${config.codespaceName}` : ''}
+
+Available Endpoints:
+  • GET  /api/health           - Server health check
+  • GET  /api/users            - Get all users
+  • POST /api/users            - Create new user
+  • GET  /api/teams            - Get all teams
+  • POST /api/teams            - Create new team
+  • GET  /api/activities       - Get all activities
+  • POST /api/activities       - Log new activity
+  • GET  /api/leaderboard      - Get global leaderboard
+  • GET  /api/workouts         - Get all workouts
+  • POST /api/workouts         - Create new workout
+
+📚 API Documentation: ${config.apiUrl}/api/health
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  `);
 });
